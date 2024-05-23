@@ -1,0 +1,94 @@
+graph TD
+    subgraph Shared Services Account 
+        VPC_Shared("Shared Services VPC")
+        Internet["Internet"]
+        ALB_Shared("Application Load Balancer")
+        NLB_Shared("Network Load Balancer")
+        WAF("Web Application Firewall")
+        Bastion["Bastion Host"]
+        SIEM["SIEM (Security Information & Event Mgmt.)"]
+
+        Internet --> WAF
+        WAF --> ALB_Shared
+        WAF --> NLB_Shared
+        ALB_Shared --> Bastion
+        NLB_Shared --> Bastion
+    end
+
+    subgraph Production Account
+        VPC_Prod("Production VPC")
+        IGW_Prod("Internet Gateway")
+        PrivateSubnet_Prod1("Private Subnet 1")
+        PrivateSubnet_Prod2("Private Subnet 2")
+        PublicSubnet_Prod("Public Subnet")
+        Firewall_Prod("Firewall (e.g., Security Groups)")
+        App_Prod["Production Applications"]
+
+        VPC_Prod --> IGW_Prod
+        IGW_Prod --> Internet
+        VPC_Prod --> PrivateSubnet_Prod1
+        VPC_Prod --> PrivateSubnet_Prod2
+        VPC_Prod --> PublicSubnet_Prod
+        PrivateSubnet_Prod1 --> Firewall_Prod
+        PrivateSubnet_Prod2 --> Firewall_Prod
+        Firewall_Prod --> App_Prod
+        PublicSubnet_Prod --> ALB_Shared
+    end
+
+    subgraph Staging Account
+        VPC_Prod("Staging VPC")
+        IGW_Prod("Internet Gateway")
+        PrivateSubnet_Prod1("Private Subnet 1")
+        PrivateSubnet_Prod2("Private Subnet 2")
+        PublicSubnet_Prod("Public Subnet")
+        Firewall_Prod("Firewall (e.g., Security Groups)")
+        App_Prod["Production Applications"]
+
+        VPC_Prod --> IGW_Stg
+        IGW_Prod --> Internet
+        VPC_Prod --> PrivateSubnet_Stg1
+        VPC_Prod --> PrivateSubnet_Stg2
+        VPC_Prod --> PublicSubnet_Stg
+        PrivateSubnet_Stg1 --> Firewall_Stg
+        PrivateSubnet_Stg2 --> Firewall_Stg
+        Firewall_Prod --> App_Stg
+        PublicSubnet_Prod --> ALB_Shared
+    end
+   
+    subgraph Development Account
+        VPC_Dev("Development VPC")
+        IGW_Dev("Internet Gateway")
+        PrivateSubnet_Dev("Private Subnet")
+        PublicSubnet_Dev("Public Subnet")
+        Firewall_Dev("Firewall (e.g., Security Groups)")
+        App_Dev["Development Applications"]
+        Bastion_Dev["Bastion Host"]
+
+        VPC_Dev --> IGW_Dev
+        IGW_Dev --> Internet
+        VPC_Dev --> PrivateSubnet_Dev
+        VPC_Dev --> PublicSubnet_Dev
+        PrivateSubnet_Dev --> Firewall_Dev
+        Firewall_Dev --> App_Dev
+        PublicSubnet_Dev --> Bastion_Dev
+    end
+   
+    subgraph Control Plane Account
+        VPC_Mgmt("Control Plane VPC")
+        IGW_Mgmt("Internet Gateway")
+        PrivateSubnet_Mgmt("Private Subnet")
+        Firewall_Mgmt("Firewall (e.g., Security Groups)")
+        Jumpbox["Jumpbox (SSH Access)"]
+        SIEM["SIEM (Security Information & Event Mgmt.)"]
+        
+        VPC_Mgmt --> IGW_Mgmt
+        IGW_Mgmt --> Internet
+        VPC_Mgmt --> PrivateSubnet_Mgmt
+        PrivateSubnet_Mgmt --> Firewall_Mgmt
+        Firewall_Mgmt --> Jumpbox
+        Firewall_Mgmt --> SIEM
+    end
+
+    VPC_Shared -. Transit Gateway .-> VPC_Prod
+    VPC_Shared -. Transit Gateway .-> VPC_Dev
+    VPC_Shared -. Transit Gateway .-> VPC_Mgmt
