@@ -1,0 +1,122 @@
+%% title: 10-1 Network_Draft_jt
+%% description: Section 10 - System Environment - Figure 10-1 Network
+
+%%ARP Notes: This is the existing published diagram.
+%%Our team can use it as a starting point, but will need to make several changes
+%%to align with our overall vision and ZTMM
+
+graph LR
+  subgraph External Services
+    github["GitHub"]
+    slack["Slack"]
+    statuspage["StatusPage"]
+    googlegroups["Google Groups"]
+  end
+  subgraph AWS US East/West
+    cloudfront["AWS CloudFront"]
+    route53["AWS Route53"]
+  end
+  subgraph AWS GovCloud
+    apps-alb["Customer ALB"]
+    ops-alb["UAA & Concourse ALB"]
+    s3["AWS S3"]
+    cloudwatch["AWS CloudWatch"]
+    cloudwatch-logs["AWS CloudWatch Logs"]
+    config["AWS Config"]
+    cloudtrail["AWS CloudTrail"]
+    iam["AWS IAM"]
+    iam-perms["AWS IAM Permissions"]
+    iam-roles["AWS IAM Roles"]
+    aws-console["AWS Console"]
+    subgraph Staging VPC
+      vpc-staging{Copy of Production VPC}
+    end
+    subgraph Development VPC
+      vpc-development{Copy of Production VPC}
+    end
+    subgraph cloud.gov Authorization Boundary
+      subgraph Production VPC
+        subgraph Availability Zones us-gov-west-1a/b
+          subgraph Public Subnet
+            prod-nat["NAT Gateway"]
+            prod-alb-endpoint("ALB Endpoint")
+          end
+          subgraph Private Subnet - Core Tier A
+            prod-cf{"Cloud Foundry<br>Core Components"}
+            idp["cloud.gov fallback IDP"]
+          end
+          subgraph Private Subnet - Core Tier B
+            prod-diego{"Cloud Foundry<br>Container Management"}
+          end
+          subgraph Private Subnet - Database Tier
+            prod-rds{"AWS RDS instances"}
+          end
+          subgraph Private Subnet - Services Tier
+            prod-services{"Service instances"}
+          end
+        end
+        vpc-router-prod["VPC Router"]
+      end
+      vpc-peering["VPC Peering Connection"]
+      subgraph Tooling VPC
+        subgraph Tooling Availability Zones us-gov-west-1a/b
+          subgraph Public Subnet
+            tooling-nat["NAT Gateway"]
+            tooling-alb-endpoint("ALB Endpoint")
+          end
+          subgraph Private Subnet - Operations Tier
+            tooling-ops["BOSH Director/UAA"]
+          end
+          subgraph Private Subnet - Database Tier
+            tooling-rds{"AWS RDS instances"}
+          end
+          subgraph Private Subnet - Concourse Tier
+            tooling-concourse["Concourse - production"]
+          end
+        end
+        vpc-router-tooling["VPC Router"]
+      end
+    end
+  end
+  customer(("Customer"))
+  ops(("Cloud Operations"))
+
+  customer-.DNS UDP 53.->route53
+  customer--Web HTTP 80 or HTTPS 443-->cloudfront
+  customer--Web HTTP 80 or HTTPS 443-->apps-alb
+  customer--Web HTTPS 443-->statuspage
+
+  cloudfront--Web HTTPS 443-->apps-alb
+  prod-services-.create service instance TLS 443.->cloudfront
+  prod-services-.create service instance TLS 443.->s3
+
+  ops--Web HTTPS 443-->ops-alb
+  ops--Web HTTPS 443-->github
+  ops--Web HTTPS 443-->slack
+  ops--Web HTTPS 443-->aws-console
+  ops--Web HTTPS 443-->statuspage
+  ops--Web HTTPS 443-->googlegroups
+
+  tooling-nat--Alerting TLS 587-->googlegroups
+
+  vpc-router-tooling-->vpc-peering
+  vpc-router-prod-->vpc-peering
+  vpc-staging-->vpc-peering
+  vpc-development-->vpc-peering
+  aws-console-."Authentication/Authorization".->iam
+  iam-.->iam-perms
+  iam-perms-.->iam-roles
+
+  apps-alb---prod-alb-endpoint
+  prod-alb-endpoint---prod-nat
+  prod-nat---prod-cf
+  prod-nat---prod-diego
+  prod-nat---prod-rds
+  prod-nat---prod-services
+
+  ops-alb---tooling-alb-endpoint
+  tooling-alb-endpoint---tooling-nat
+  tooling-nat---tooling-ops
+  tooling-nat---tooling-rds
+  tooling-nat---tooling-concourse
+
