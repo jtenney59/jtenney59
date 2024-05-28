@@ -1,0 +1,131 @@
+%% title: 10-4.1 Customer Data Flow
+%% description: Section 10 - System Environment - Figure 10-4.1 Customer Data Flow
+
+%%ARP Notes: This is the existing published diagram.
+%%Our team can use it as a starting point, but will need to make several changes
+%%to align with our overall vision and ZTMM
+
+%%graph LR
+flowchart TD
+%%style
+    classDef govAcctStyle stroke: #167CC5, stroke-width: 4px
+    classDef comAcctStyle stroke: #ea8d02, stroke-width: 4px
+    classDef govOrgStyle stroke: #bc0061, stroke-width: 4px
+    classDef comOrgStyle stroke: #010daf, stroke-width: 4px
+    classDef vpcStyle stroke: #616363, stroke-width: 3px, stroke-dasharray: 3 1
+    classDef regionStyle stroke: #616363, stroke-width: 3px, stroke-dasharray: 10 1
+    classDef subnetStyle stroke: #616363, stroke-width: 3px, stroke-dasharray: 1 1
+
+%%Legend
+    subgraph Legend
+        direction TB
+        legend_CommOrg[AWS Commercial Organization]:::comOrgStyle
+        legend_GovOrg[AWS GovCloud Organization]:::govOrgStyle
+        legend_CommAcct[AWS Commercial Account]:::comAcctStyle
+        legend_GovAcct[AWS GovCloud Account]:::govAcctStyle
+        legend_region[AWS Region]:::regionStyle
+        legend_vpc[AWS VPC]:::vpcStyle
+        legend_subnet[AWS Subnet]:::subnetStyle
+    end
+
+%%External entities or services
+    appdeveloper{App Developer<br>Customers}
+    subgraph gsaauth [GSA Auth]
+        gsaokta{Okta}
+    end
+    subgraph Customer Responsibility
+        CustomerSAML{"Single Sign-on (SSO)<br>providing MFA"}
+    end
+
+    subgraph cgAccd [Cloud.gov]
+        subgraph awsComOrg [AWS Commercial Org]
+            subgraph cnapAcct [CNAP Account]
+                transit[AWS Transit Gateway]
+                advfirewall[AWS Network Firewall]
+            end
+            class cnapAcct comAcctStyle
+        end
+        class awsComOrg comOrgStyle
+
+        subgraph awsGovOrg [AWS GovCloud Org]
+            subgraph govMonAcct [Monitoring and Logging Account]
+                logollectiongov[OpenSearch Log Collection]
+                vulndetect[Vulnerability Detection Tools]
+                logviz[Log Visualization and Query]
+                govContTwr[AWS Control Tower]
+                govSecHub[Security Hub]
+                Logstash[Customer Logs Logstash]
+            end
+            class govMonAcct govAcctStyle
+
+            subgraph vpcProd1 [VPC Prod]
+                AWSService("AWS Brokered Services e.g.<br>AWS RDS Postgresql, MySQL<br>AWS Elasticache Redis<br>AWS ElasticSearch/OpenSearch")
+                subgraph pubSubnet1 [Public Subnet]
+                    devalbs[ALBs for Dev Access]
+                end
+                class pubSubnet1 subnetStyle
+
+                subgraph privSubnet [Private Subnet]
+                    CloudControllerDB(Cloud Controller<br>RDS DB)
+                end
+                class privSubnet subnetStyle
+
+                subgraph cfAppSubnet [CloudFroudry Private App Subnet]
+                    ServiceBroker[Service Broker]
+                    CloudController[Cloud Controller<br>api.fr.cloud.gov]
+                    Gorouters{CloudFoundry Gorouter}
+                    SSHProxy[SSH Proxy]
+                    UAA["User Authentication/Authorization (UAA)<br>login.fr.cloud.gov"]
+                    UAADB[UAA DB]
+                    CloudController[Cloud Controller<br>api.fr.cloud.gov]
+                    InternalService["Internal Service<br>e.g. Service Account<br>Identity Provider"]
+                    Loggregator[Loggregator]
+                    subgraph diego[Container Management]
+                        subgraph appContainer
+                            customerApp1{Customer App<br>Container}
+                        end
+                        subgraph dashboardContainer
+                            Dashboard{Dashboard<br>dashboard.fr.cloud.gov}
+                        end
+                    end
+                end
+                class cfAppSubnet subnetStyle
+
+            end
+            class vpcProd1 vpcStyle
+            subgraph cloudGovIdp [cloud.gov SAML IDP]
+                SAML{cloud.gov fallback IDP<br>providing MFA}
+            end
+            class cloudGovIdp govAcctStyle
+            CloudControllerDB(Cloud Controller<br>RDS DB)
+            CloudWatch[AWS CloudWatch Logs]
+            S3[S3]
+        end
+        class awsGovOrg govOrgStyle
+    end
+
+%%Connections
+    transit --Web HTTPS 443 or SSH 2222-->devalbs
+    appdeveloper -- Web HTTPS 443 or SSH 2222 --> advfirewall
+    advfirewall -- Web HTTPS 443 or SSH 2222 --> transit
+    Gorouters-->SSHProxy
+    Gorouters-->CloudController
+    CloudController -- Request for provision --> ServiceBroker
+    CloudController-->CloudControllerDB
+    ServiceBroker-- Provisions-->InternalService
+    ServiceBroker -- Provisions --> AWSService
+    Gorouters --> customerApp1
+    Gorouters --> Dashboard
+    customerApp1-->Loggregator
+    Loggregator --> Logstash
+    Logstash --> logollectiongov
+    Logstash --> CloudWatch
+    Logstash --> S3
+    devalbs -- Web HTTPS 443 or SSH 2222 --> Gorouters
+    UAA -. Authentication .-> CustomerSAML
+    UAA -. Authentication .-> SAML
+    Gorouters -. Authorization for Cloud Controller .-> UAA
+    SSHProxy -. Authorization .-> UAA
+    UAA -.Authentication .-> gsaokta
+    UAA-->UAADB
+    SSHProxy-->customerApp1
