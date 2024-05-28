@@ -142,20 +142,20 @@ cloudfront -- Web HTTP 80 | HTTPS 443 --> appalbs
 appconsumer -- Web HTTP 80 | HTTPS 443 --> cloudfront
 jumpbox -.auth.-> uaa
 concourse -.auth.-> uaa
-privalb -- Ops CLI --> jumpbox
+privalb -- Ops CLI SSH 22 --> jumpbox
 privalb -- Ops Web HTTP 80 | HTTPS 443 --> concourse
 transit -- Dev CLI SSH 2222 --> devalbs
 devalbs -- Dev CLI SSH 22 --> sshproxy
 sshproxy-.auth.-> prodUaa
 prodUaa -.auth.- extauth & gsaokta
-sshproxy -- CLI SSH 22, 2222 --> gorouter
+sshproxy -- CLI SSH 22 --> gorouter
 operators -- Web or CLI HTTPS 443 --> zscaler --> advfirewall
 advfirewall -- Web or CLI HTTPS 443 --> transit
 transit -- Web or CLI HTTPS 443 --> privalb
 appdeveloper -- Web or CLI HTTPS 443 --> advfirewall
 appalbs -- Web HTTPS 443 --> gorouter
 gorouter -- Web HTTPS 443 --> diegoCell
-gorouter -- CLI SSH 22, 2222 --> customerApp1
+gorouter -- CLI SSH 22 --> customerApp1
 kinesisfirehose -.Encrypted Log Transfer.-> logollectiongov
 uaa -.auth.-> gsaokta
 logollectioncom -.Log Transfer.->kinesisfirehose
