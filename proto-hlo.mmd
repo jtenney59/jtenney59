@@ -145,7 +145,7 @@ concourse -.auth.-> uaa
 privalb -- Ops CLI --> jumpbox
 privalb -- Ops Web HTTP 80 | HTTPS 443 --> concourse
 transit -- Dev CLI SSH 2222 --> devalbs
-devalbs -- Dev CLI SSH --> sshproxy
+devalbs -- Dev CLI SSH 22 --> sshproxy
 sshproxy-.auth.-> prodUaa
 prodUaa -.auth.- extauth & gsaokta
 sshproxy -- CLI SSH 22, 2222 --> gorouter
