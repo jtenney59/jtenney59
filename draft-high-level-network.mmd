@@ -1,0 +1,175 @@
+%%title: High Level Network Diagram
+
+graph LR
+
+%%style
+classDef govAcctStyle stroke:#167CC5,stroke-width:4px
+classDef comAcctStyle stroke:#ea8d02,stroke-width:4px
+classDef govOrgStyle stroke:#bc0061,stroke-width:4px
+classDef comOrgStyle stroke:#010daf,stroke-width:4px
+classDef regionStyle stroke:#616363,stroke-width:3px,stroke-dasharray: 10 1
+classDef vpcStyle stroke:#616363,stroke-width:3px,stroke-dasharray: 3 1
+classDef azStyle stroke:#616363,stroke-width:3px,stroke-dasharray: 3 1
+classDef subnetStyle stroke:#616363,stroke-width:3px,stroke-dasharray: 1 1
+
+    subgraph AWS Commercial Accounts
+        subgraph Account 1
+            subgraph VPC 1
+                VPC1a[AZ 1a]
+                VPC1b[AZ 1b]
+                VPC1a --> VPC1b
+                subgraph VPC1a
+                    subgraph Public Subnet
+                        CDN[Content Delivery Network]
+                    end
+                    subgraph Private Subnet
+                        App1[(Application 1)]
+                    end
+                end
+                subgraph VPC1b
+                    subgraph Public Subnet
+                    end
+                    subgraph Private Subnet
+                        App2[(Application 2)]
+                    end
+                end
+            end
+        end
+
+        subgraph Account 2
+            subgraph VPC 2
+                VPC2a[AZ 2a]
+                subgraph VPC2a
+                    subgraph Private Subnet
+                        DB[(Database)]
+                    end
+                end
+            end
+        end
+        VPC1a -.- VPC2a[Peering Connection]
+    end
+
+    subgraph AWS GovCloud Account
+        subgraph VPC 3
+            VPC3a[AZ 3a]
+            VPC3b[AZ 3b]
+            VPC3a --> VPC3b
+            subgraph VPC3a
+                subgraph Public Subnet
+                    WAF[Web Application Firewall]
+                end
+                subgraph Private Subnet
+                    App3[(Application 3)]
+                end
+            end
+            subgraph VPC3b
+                subgraph Public Subnet
+                end
+                subgraph Private Subnet
+                    App4[(Application 4)]
+                end
+            end
+        end
+        VPC1a -.- VPC3a[Peering Connection]
+    end
+
+    CDN --> WAF
+    WAF --> App3
+    WAF --> App4
+    App1 --> DB
+    App2 --> DB
+
+    classDef default fill:#f9f,stroke:#333,stroke-width:4px;
+    classDef special fill:#ff0,stroke:#f66,stroke-width:2px;
+    class App1,App2,App3,App4,DB special;
+
+
+    subgraph AWS Commercial Accounts
+        subgraph Account 1
+            subgraph VPC 1
+                VPC1a[AZ 1a]
+                VPC1b[AZ 1b]
+                VPC1a --> VPC1b
+                subgraph VPC1a
+                    subgraph Public Subnet
+                        CDN[Content Delivery Network]
+                    end
+                    subgraph Private Subnet
+                        App1[(Application 1)]
+                    end
+                end
+                subgraph VPC1b
+                    subgraph Public Subnet
+                    end
+                    subgraph Private Subnet
+                        App2[(Application 2)]
+                    end
+                end
+            end
+        end
+
+        subgraph Account 2
+            subgraph VPC 2
+                VPC2a[AZ 2a]
+                subgraph VPC2a
+                    subgraph Private Subnet
+                        DB[(Database)]
+                    end
+                end
+            end
+        end
+        VPC1a -.- VPC2a[Peering Connection]
+    end
+
+    subgraph AWS GovCloud Account
+        subgraph VPC 3
+            VPC3a[AZ 3a]
+            VPC3b[AZ 3b]
+            VPC3a --> VPC3b
+            subgraph VPC3a
+                subgraph Public Subnet
+                    WAF[Web Application Firewall]
+                end
+                subgraph Private Subnet
+                    App3[(Application 3)]
+                end
+            end
+            subgraph VPC3b
+                subgraph Public Subnet
+                end
+                subgraph Private Subnet
+                    App4[(Application 4)]
+                end
+            end
+        end
+        VPC1a -.- VPC3a[Peering Connection]
+    end
+
+    CDN --> WAF
+    WAF --> App3
+    WAF --> App4
+    App1 --> DB
+    App2 --> DB
+
+    classDef default fill:#f9f,stroke:#333,stroke-width:4px;
+    classDef special fill:#ff0,stroke:#f66,stroke-width:2px;
+    class App1,App2,App3,App4,DB special;
+
+
+%%Legend
+  subgraph Legend
+    direction TB
+    legend_CommOrg[AWS Commercial Organization]:::comOrgStyle
+    legend_GovOrg[AWS GovCloud Organization]:::govOrgStyle
+    legend_CommAcct[AWS Commercial Account]:::comAcctStyle
+    legend_GovAcct[AWS GovCloud Account]:::govAcctStyle
+    legend_region[AWS Region]:::regionStyle
+    legend_vpc[AWS VPC]:::vpcStyle
+    legend_subnet[AWS Subnet]:::subnetStyle
+  end
+
+%%Goals
+  subgraph Architecture Draft 1 Diagram Goals
+    textbox[Facilitate discussion<br>SCCA/CNAP inclusion<br>Multi-account<br>Separation of Prod and Non-Prod<br>Centralized Logging<br>DR data replicas]
+  end
+
