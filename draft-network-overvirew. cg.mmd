@@ -42,16 +42,11 @@ graph TB
     govcloud_public_subnet --- govcloud_internet_gateway
     govcloud_private_subnet --- govcloud_nat_gateway
 
-    commercial_vpc --- commercial_public_subnet
-    commercial_vpc --- commercial_private_subnet
-    commercial_public_subnet --- commercial_internet_gateway
-    commercial_private_subnet --- commercial_nat_gateway
-
     mgmt_account --> govcloud_vpc
     shared_services_account --> govcloud_vpc
     app_account1 --> govcloud_vpc
-    app_account2 --> commercial_vpc
-    app_account3 --> commercial_vpc
+    app_account2 --> govcloud_vpc
+    app_account3 --> govcloud_vpc
     security_account --> govcloud_vpc
     security_account --> commercial_vpc
     logging_account --> govcloud_vpc
