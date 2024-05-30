@@ -1,0 +1,60 @@
+graph TB
+    subgraph Management_Account
+        mgmt_account[Management Account]
+    end
+
+    subgraph Shared_Services_Account
+        shared_services_account[Shared Services Account]
+    end
+
+    subgraph Application_Accounts
+        app_account1[Application Account 1]
+        app_account2[Application Account 2]
+        app_account3[Application Account 3]
+    end
+
+    subgraph Security_Account
+        security_account[Security Account]
+    end
+
+    subgraph Logging_Account
+        logging_account[Logging Account]
+    end
+
+    subgraph GovCloud_Region
+        govcloud_vpc[GovCloud VPC]
+        govcloud_public_subnet[Public Subnet]
+        govcloud_private_subnet[Private Subnet]
+        govcloud_nat_gateway[NAT Gateway]
+        govcloud_internet_gateway[Internet Gateway]
+    end
+
+    subgraph Commercial_Region
+        commercial_vpc[Commercial VPC]
+        commercial_public_subnet[Public Subnet]
+        commercial_private_subnet[Private Subnet]
+        commercial_nat_gateway[NAT Gateway]
+        commercial_internet_gateway[Internet Gateway]
+    end
+
+    govcloud_vpc --- govcloud_public_subnet
+    govcloud_vpc --- govcloud_private_subnet
+    govcloud_public_subnet --- govcloud_internet_gateway
+    govcloud_private_subnet --- govcloud_nat_gateway
+
+    commercial_vpc --- commercial_public_subnet
+    commercial_vpc --- commercial_private_subnet
+    commercial_public_subnet --- commercial_internet_gateway
+    commercial_private_subnet --- commercial_nat_gateway
+
+    mgmt_account --> govcloud_vpc
+    shared_services_account --> govcloud_vpc
+    app_account1 --> govcloud_vpc
+    app_account2 --> commercial_vpc
+    app_account3 --> commercial_vpc
+    security_account --> govcloud_vpc
+    security_account --> commercial_vpc
+    logging_account --> govcloud_vpc
+    logging_account --> commercial_vpc
+
+    govcloud_vpc -.-> commercial_vpc
