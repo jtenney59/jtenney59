@@ -1,99 +1,149 @@
 
-graph LR
-  subgraph Full Organization Boundary
-    direction TB
-    style Full Organization Boundary stroke:#000000
-    subgraph Commercial Org Boundary
-      style Commercial Org Boundary stroke:#0000FF
-      subgraph Customer Access Account
-        style Customer Access Account stroke:#FFA500
-        ALB[ALB]
-        CloudFront[CloudFront CDN]
-        NetworkFirewall[AWS Network Firewall]
-        WAF[AWS WAF]
-        Route53[Route 53 DNS]
-      end
-      subgraph Monitoring and Logging Account (Commercial)
-        style Monitoring and Logging Account (Commercial) stroke:#FFA500
-      end
-      subgraph CNAP Account
-        style CNAP Account stroke:#FFA500
-      end
+flowchart TB
+
+%% Legend
+subgraph Legend [Legend]
+  LegendOutline1[Full Org Boundary]:::fullorgstyle
+  LegendOutline2[Commercial Org Boundary]:::commercialstyle
+  LegendOutline3[Commercial Accounts]:::commercialacctstyle
+  LegendOutline4[GovCloud Org Boundary]:::govcloudstyle
+  LegendOutline5[US Gov West Region]:::usgovstyle
+  LegendOutline6[Account]:::accountstyle
+  LegendOutline7[VPC]:::vpcstyle
+  LegendOutline8[Availability Zone]:::azstyle
+  LegendOutline9[Public Subnet]:::publicsubnetstyle
+  LegendOutline10[Private Subnet]:::privatesubnetstyle
+end
+
+%% Full Organization Boundary
+subgraph FullOrg [Full Organization Boundary]
+  classDef fullorgstyle stroke-width:4px,stroke:#000000
+  
+  %% Commercial Org Boundary
+  subgraph CommercialOrg [Commercial Org Boundary]
+    classDef commercialstyle stroke-width:2px,stroke:#0000FF
+    
+    %% Commercial Accounts
+    subgraph CustomerAccess [Customer Access Account]
+      classDef commercialacctstyle stroke-width:2px,stroke:#FFA500
+      ALB[ALB]
+      CDN[CloudFront CDN]
+      Firewall[AWS Network Firewall]
+      WAF[AWS WAF]
+      DNS[Route 53 DNS]
     end
-    subgraph GovCloud Org Boundary
-      style GovCloud Org Boundary stroke:#FF0000
-      subgraph US Gov West Region
-        style US Gov West Region stroke:#FF00FF
-        subgraph Primary Account
-          style Primary Account stroke:#0000FF
-          subgraph Prod VPC
-            style Prod VPC stroke:#000000
-            subgraph Availability Zone A (Prod)
-              style Availability Zone A (Prod) stroke:#800080
-              PublicSubnetA[Public Subnet]
-              PrivateSubnetA[Private Subnet]
-              style PublicSubnetA stroke:#808080
-              style PrivateSubnetA stroke:#808080
-            end
-            subgraph Availability Zone B (Prod)
-              style Availability Zone B (Prod) stroke:#800080
-              PublicSubnetB[Public Subnet]
-              PrivateSubnetB[Private Subnet]
-              style PublicSubnetB stroke:#808080
-              style PrivateSubnetB stroke:#808080
-            end
-          end
-          subgraph Staging VPC
-            style Staging VPC stroke:#000000
-            subgraph Availability Zone A (Staging)
-              style Availability Zone A (Staging) stroke:#800080
-              PublicSubnetAStaging[Public Subnet]
-              PrivateSubnetAStaging[Private Subnet]
-              style PublicSubnetAStaging stroke:#808080
-              style PrivateSubnetAStaging stroke:#808080
-            end
-            subgraph Availability Zone B (Staging)
-              style Availability Zone B (Staging) stroke:#800080
-              PublicSubnetBStaging[Public Subnet]
-              PrivateSubnetBStaging[Private Subnet]
-              style PublicSubnetBStaging stroke:#808080
-              style PrivateSubnetBStaging stroke:#808080
-            end
-          end
-          subgraph Development VPC
-            style Development VPC stroke:#000000
-            subgraph Availability Zone A (Development)
-              style Availability Zone A (Development) stroke:#800080
-              PublicSubnetADev[Public Subnet]
-              PrivateSubnetADev[Private Subnet]
-              style PublicSubnetADev stroke:#808080
-              style PrivateSubnetADev stroke:#808080
-            end
-            subgraph Availability Zone B (Development)
-              style Availability Zone B (Development) stroke:#800080
-              PublicSubnetBDev[Public Subnet]
-              PrivateSubnetBDev[Private Subnet]
-              style PublicSubnetBDev stroke:#808080
-              style PrivateSubnetBDev stroke:#808080
-            end
-          end
-          subgraph Tooling VPC
-            style Tooling VPC stroke:#000000
-            ALBTooling[ALB for Privileged Users]
-            BOSHDirector[BOSH Director]
-            UAA[UAA]
-          end
-          subgraph Disaster Recovery VPC
-            style Disaster Recovery VPC stroke:#000000
-            RDSCopy[RDS Copy]
-            S3Copy[S3 Copy]
-          end
-        end
-        subgraph Monitoring and Logging Account (GovCloud)
-          style Monitoring and Logging Account (GovCloud) stroke:#0000FF
-          ControlTower[AWS Control Tower]
-          SecurityHub[AWS Security Hub]
-        end
-      end
+    
+    subgraph MonitoringLogging [Monitoring & Logging Account]
+      classDef commercialacctstyle stroke-width:2px,stroke:#FFA500
     end
+    
+    subgraph CNAP [CNAP Account]
+      classDef commercialacctstyle stroke-width:2px,stroke:#FFA500
+    end
+    
   end
+  
+  %% GovCloud Org Boundary
+  subgraph GovCloudOrg [GovCloud Org Boundary]
+    classDef govcloudstyle stroke-width:4px,stroke:#FF0000
+    
+    %% US Gov West Region
+    subgraph USGovWest [US Gov West Region]
+      classDef usgovstyle stroke-width:2px,stroke:#FF00FF
+      
+      %% Primary Account
+      subgraph PrimaryAccount [Primary Account]
+        classDef accountstyle stroke-width:2px,stroke:#0000FF
+        
+        %% Prod VPC
+        subgraph ProdVPC [Prod VPC]
+          classDef vpcstyle stroke-width:2px,stroke:#000000
+          
+          %% Availability Zone A
+          subgraph AZA_Prod [Availability Zone A]
+            classDef azstyle stroke-width:2px,stroke:#800080
+            PublicSubnetA1_Prod[Public Subnet]:::publicsubnetstyle
+            PrivateSubnetA1_Prod[Private Subnet]:::privatesubnetstyle
+          end
+          
+          %% Availability Zone B
+          subgraph AZB_Prod [Availability Zone B]
+            classDef azstyle stroke-width:2px,stroke:#800080
+            PublicSubnetB1_Prod[Public Subnet]:::publicsubnetstyle
+            PrivateSubnetB1_Prod[Private Subnet]:::privatesubnetstyle
+          end
+          
+        end
+        
+        %% Staging VPC
+        subgraph StagingVPC [Staging VPC]
+          classDef vpcstyle stroke-width:2px,stroke:#000000
+          
+          %% Availability Zone A
+          subgraph AZA_Staging [Availability Zone A]
+            classDef azstyle stroke-width:2px,stroke:#800080
+            PublicSubnetA1_Staging[Public Subnet]:::publicsubnetstyle
+            PrivateSubnetA1_Staging[Private Subnet]:::privatesubnetstyle
+          end
+          
+          %% Availability Zone B
+          subgraph AZB_Staging [Availability Zone B]
+            classDef azstyle stroke-width:2px,stroke:#800080
+            PublicSubnetB1_Staging[Public Subnet]:::publicsubnetstyle
+            PrivateSubnetB1_Staging[Private Subnet]:::privatesubnetstyle
+          end
+          
+        end
+        
+        %% Development VPC
+        subgraph DevVPC [Development VPC]
+          classDef vpcstyle stroke-width:2px,stroke:#000000
+          
+          %% Availability Zone A
+          subgraph AZA_Dev [Availability Zone A]
+            classDef azstyle stroke-width:2px,stroke:#800080
+            PublicSubnetA1_Dev[Public Subnet]:::publicsubnetstyle
+            PrivateSubnetA1_Dev[Private Subnet]:::privatesubnetstyle
+          end
+          
+          %% Availability Zone B
+          subgraph AZB_Dev [Availability Zone B]
+            classDef azstyle stroke-width:2px,stroke:#800080
+            PublicSubnetB1_Dev[Public Subnet]:::publicsubnetstyle
+            PrivateSubnetB1_Dev[Private Subnet]:::privatesubnetstyle
+          end
+          
+        end
+        
+        %% Tooling VPC
+        subgraph ToolingVPC [Tooling VPC]
+          classDef vpcstyle stroke-width:2px,stroke:#000000
+          ALB_Tooling[ALB for Privileged Users]
+          BOSH_Tooling[BOSH Director]
+          UAA_Tooling[UAA]
+        end
+        
+        %% Disaster Recovery VPC
+        subgraph DRVPC [Disaster Recovery VPC]
+          classDef vpcstyle stroke-width:2px,stroke:#000000
+          RDS_DR[RDS Copy]
+          S3_DR[S3 Copy]
+        end
+        
+      end
+      
+      %% Monitoring & Logging Account
+      subgraph MonLogAccount [Monitoring & Logging Account]
+        classDef accountstyle stroke-width:2px,stroke:#0000FF
+        ControlTower[AWS Control Tower]
+        SecurityHub[Security Hub]
+      end
+      
+    end
+    
+  end
+  
+end
+
+classDef publicsubnetstyle stroke-width:2px,stroke:#808080;
+classDef privatesubnetstyle stroke-width:2px,stroke:#808080;
