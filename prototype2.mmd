@@ -4,10 +4,10 @@ graph TD
 
     style Full Organization Boundary stroke:black
         subgraph Commercial Org Boundary
-        direction TB
+        
         style Commercial Org Boundary stroke:blue
             subgraph Commercial Accounts
-            direction TB
+            
             style Commercial Accounts stroke:orange
                 CustomerAccess[Customer Access Account]
                 MonitoringLogging[Monitoring and Logging Account]
@@ -17,7 +17,7 @@ graph TD
                 style CNAP stroke:orange
 
                 subgraph CustomerAccessDetails
-                direction TB
+                
                 ALB[ALB]
                 CloudFront[CloudFront CDN]
                 NetworkFirewall[AWS Network Firewall]
@@ -33,22 +33,22 @@ graph TD
         end
 
         subgraph GovCloud Org Boundary
-        direction TB
+        
         style GovCloud Org Boundary stroke:red
             subgraph USGovWestRegion
-            direction TB
+            
             style USGovWestRegion stroke:magenta
 
                 subgraph PrimaryAccount
-                direction TB
+                
                 style PrimaryAccount stroke:blue
 
                     subgraph ProdVPC
-                    direction TB
+                
                     style ProdVPC stroke:black
 
                         subgraph AZA_Prod
-                        direction TB
+                        
                         style AZA_Prod stroke:purple
                         PublicSubnet_AZ_A_Prod[Public Subnet]
                         PrivateSubnet_AZ_A_Prod[Private Subnet]
@@ -57,7 +57,7 @@ graph TD
                         end
 
                         subgraph AZB_Prod
-                        direction TB
+                        
                         style AZB_Prod stroke:purple
                         PublicSubnet_AZ_B_Prod[Public Subnet]
                         PrivateSubnet_AZ_B_Prod[Private Subnet]
@@ -67,11 +67,11 @@ graph TD
                     end
 
                     subgraph StagingVPC
-                    direction TB
+                    
                     style StagingVPC stroke:black
 
                         subgraph AZA_Staging
-                        direction TB
+                        
                         style AZA_Staging stroke:purple
                         PublicSubnet_AZ_A_Staging[Public Subnet]
                         PrivateSubnet_AZ_A_Staging[Private Subnet]
@@ -80,7 +80,7 @@ graph TD
                         end
 
                         subgraph AZB_Staging
-                        direction TB
+                        
                         style AZB_Staging stroke:purple
                         PublicSubnet_AZ_B_Staging[Public Subnet]
                         PrivateSubnet_AZ_B_Staging[Private Subnet]
@@ -90,11 +90,11 @@ graph TD
                     end
 
                     subgraph DevelopmentVPC
-                    direction TB
+                
                     style DevelopmentVPC stroke:black
 
                         subgraph AZA_Dev
-                        direction TB
+                        
                         style AZA_Dev stroke:purple
                         PublicSubnet_AZ_A_Dev[Public Subnet]
                         PrivateSubnet_AZ_A_Dev[Private Subnet]
@@ -103,7 +103,7 @@ graph TD
                         end
 
                         subgraph AZB_Dev
-                        direction TB
+                        
                         style AZB_Dev stroke:purple
                         PublicSubnet_AZ_B_Dev[Public Subnet]
                         PrivateSubnet_AZ_B_Dev[Private Subnet]
@@ -113,7 +113,7 @@ graph TD
                     end
 
                     subgraph ToolingVPC
-                    direction TB
+                    
                     style ToolingVPC stroke:black
                     ALB_Privileged[ALB for Privileged Users]
                     BOSH_Director[BOSH Director]
@@ -124,7 +124,7 @@ graph TD
                     end
 
                     subgraph DisasterRecoveryVPC
-                    direction TB
+                    
                     style DisasterRecoveryVPC stroke:black
                     RDS_Copy[RDS Copy]
                     S3_Copy[S3 Copy]
