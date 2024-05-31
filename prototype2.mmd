@@ -1,0 +1,104 @@
+Here is the AWS network diagram represented in Mermaid syntax:
+
+```mermaid
+graph LR
+  subgraph Full Organization Boundary
+    direction TB
+    style Full Organization Boundary stroke:#000000
+    subgraph Commercial Org Boundary
+      style Commercial Org Boundary stroke:#0000FF
+      subgraph Customer Access Account
+        style Customer Access Account stroke:#FFA500
+        ALB[ALB]
+        CloudFront[CloudFront CDN]
+        NetworkFirewall[AWS Network Firewall]
+        WAF[AWS WAF]
+        Route53[Route 53 DNS]
+      end
+      subgraph Monitoring and Logging Account (Commercial)
+        style Monitoring and Logging Account (Commercial) stroke:#FFA500
+      end
+      subgraph CNAP Account
+        style CNAP Account stroke:#FFA500
+      end
+    end
+    subgraph GovCloud Org Boundary
+      style GovCloud Org Boundary stroke:#FF0000
+      subgraph US Gov West Region
+        style US Gov West Region stroke:#FF00FF
+        subgraph Primary Account
+          style Primary Account stroke:#0000FF
+          subgraph Prod VPC
+            style Prod VPC stroke:#000000
+            subgraph Availability Zone A (Prod)
+              style Availability Zone A (Prod) stroke:#800080
+              PublicSubnetA[Public Subnet]
+              PrivateSubnetA[Private Subnet]
+              style PublicSubnetA stroke:#808080
+              style PrivateSubnetA stroke:#808080
+            end
+            subgraph Availability Zone B (Prod)
+              style Availability Zone B (Prod) stroke:#800080
+              PublicSubnetB[Public Subnet]
+              PrivateSubnetB[Private Subnet]
+              style PublicSubnetB stroke:#808080
+              style PrivateSubnetB stroke:#808080
+            end
+          end
+          subgraph Staging VPC
+            style Staging VPC stroke:#000000
+            subgraph Availability Zone A (Staging)
+              style Availability Zone A (Staging) stroke:#800080
+              PublicSubnetAStaging[Public Subnet]
+              PrivateSubnetAStaging[Private Subnet]
+              style PublicSubnetAStaging stroke:#808080
+              style PrivateSubnetAStaging stroke:#808080
+            end
+            subgraph Availability Zone B (Staging)
+              style Availability Zone B (Staging) stroke:#800080
+              PublicSubnetBStaging[Public Subnet]
+              PrivateSubnetBStaging[Private Subnet]
+              style PublicSubnetBStaging stroke:#808080
+              style PrivateSubnetBStaging stroke:#808080
+            end
+          end
+          subgraph Development VPC
+            style Development VPC stroke:#000000
+            subgraph Availability Zone A (Development)
+              style Availability Zone A (Development) stroke:#800080
+              PublicSubnetADev[Public Subnet]
+              PrivateSubnetADev[Private Subnet]
+              style PublicSubnetADev stroke:#808080
+              style PrivateSubnetADev stroke:#808080
+            end
+            subgraph Availability Zone B (Development)
+              style Availability Zone B (Development) stroke:#800080
+              PublicSubnetBDev[Public Subnet]
+              PrivateSubnetBDev[Private Subnet]
+              style PublicSubnetBDev stroke:#808080
+              style PrivateSubnetBDev stroke:#808080
+            end
+          end
+          subgraph Tooling VPC
+            style Tooling VPC stroke:#000000
+            ALBTooling[ALB for Privileged Users]
+            BOSHDirector[BOSH Director]
+            UAA[UAA]
+          end
+          subgraph Disaster Recovery VPC
+            style Disaster Recovery VPC stroke:#000000
+            RDSCopy[RDS Copy]
+            S3Copy[S3 Copy]
+          end
+        end
+        subgraph Monitoring and Logging Account (GovCloud)
+          style Monitoring and Logging Account (GovCloud) stroke:#0000FF
+          ControlTower[AWS Control Tower]
+          SecurityHub[AWS Security Hub]
+        end
+      end
+    end
+  end
+```
+
+This diagram includes all specified elements and boundaries, using the requested colors and structure. You can use this Mermaid code to visualize the network diagram in any compatible tool or platform.
