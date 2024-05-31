@@ -1,0 +1,70 @@
+
+graph TD
+    
+subgraph Cloud.gov_Boundry
+     subgraph Management_Account
+        mgmt_account[Management Account]
+     end
+
+     subgraph Security_Account
+        security_account[Security Account]
+     end
+
+     subgraph GovCloud_Region
+        govcloud_vpc[GovCloud VPC]
+        govcloud_public_subnet[Public Subnet]
+        govcloud_private_subnet[Private Subnet]
+        govcloud_nat_gateway[NAT Gateway]
+        govcloud_internet_gateway[Internet Gateway]
+      subgraph Production 1 VPC
+      end
+      subgraph Non Production 1 VPC
+        subgraph Cloud Foundry
+         Development[Development]
+         Staging[Staging]
+         cloud_foundry_private_subnet[CF Private Subnet]
+        end
+       end
+       subgraph Production 2 VPC
+       end
+       subgraph Non Production 2 VPC
+        subgraph Cloud Foundry
+         Development[Development]
+         Staging[Staging]
+         cloud_foundry_private_subnet[CF Private Subnet]
+      end
+
+    subgraph Commercial_Region
+      subgraph VPC
+        commercial_vpc[Commercial VPC]
+        commercial_public_subnet[Public Subnet]
+        commercial_private_subnet[Private Subnet]
+        commercial_nat_gateway[NAT Gateway]
+        commercial_internet_gateway[Internet Gateway]
+       subgraph cnap_Account
+        cnap[CNAP Account]
+       end
+       subgraph Customer_Access_Account
+        customer_access_account[Customer Access Account]
+       end
+       subgraph Monitoring_Logging_Account
+        monitoring_logging_account[Monitoring & Logging Account]
+       end
+     end
+  end
+ end
+
+    govcloud_vpc --- govcloud_public_subnet
+    govcloud_vpc --- govcloud_private_subnet
+    govcloud_public_subnet --- govcloud_internet_gateway
+    govcloud_private_subnet --- govcloud_nat_gateway
+    mgmt_account --> govcloud_vpc
+    Development --> govcloud_vpc
+    Staging --> govcloud_vpc
+    Production --> govcloud_vpc
+    security_account --> govcloud_vpc
+    security_account --> commercial_vpc
+    logging_account --> govcloud_vpc
+    logging_account --> commercial_vpc
+
+    govcloud_vpc -.-> commercial_vpc
