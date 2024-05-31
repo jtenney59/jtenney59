@@ -1,0 +1,343 @@
+%%title: High Level Overview
+
+flowchart TD
+
+%%style
+classDef acctGovStyle stroke:#167CC5,stroke-width:4px
+classDef acctComStyle stroke:#ea8d02,stroke-width:4px
+classDef orgGovStyle stroke:#bc0061,stroke-width:4px
+classDef orgComStyle stroke:#010daf,stroke-width:4px
+classDef vpcStyle stroke:#616363,stroke-width:3px,stroke-dasharray: 3 1
+classDef regionStyle stroke:#616363,stroke-width:3px,stroke-dasharray: 10 1
+classDef subnetStyle stroke:#616363,stroke-width:3px,stroke-dasharray: 1 1
+
+%%External entities or services
+appconsumer{App Consumer<br>Customers}
+appdeveloper{App Developer<br>Customers}
+operators((GSA Cloud.gov<br>Operators))
+zscaler[Zscaler GSA Network Routing]
+subgraph gsaauth [GSA Auth]
+  gsaokta{Okta}
+end
+subgraph Other Fed Auth
+  extauth{External Auth}
+end
+
+%%Accreditation boundary
+subgraph cgAccd [Cloud.gov]
+  subgraph orgCom [AWS Commercial Org]
+
+    subgraph acctCnap [CNAP Account]
+      transit[AWS Transit Gateway]
+      advfirewall[AWS Network Firewall]
+      identitycenterCom["AWS Identity Center<br>(auth within AWS)"]
+    end
+    class acctCnap acctComStyle
+
+    subgraph acctCustAcc [Customer Access Account]
+      route53[Route53 DNS]
+      cloudfront[Cloudfront CDNs]
+      wafShield[AWS WAF and Shield Advanced]
+      webNetFirewall[AWS Network Firewall]
+    end
+    class acctCustAcc acctComStyle
+
+    subgraph acctGovLogColl [Monitoring and Logging Account]
+      kinesisFirehoseCom[AWS Kinesis Firehose]
+      logCollectionCom[OpenSearch Log Collection]
+      contTwrCom[AWS Control Tower]
+      secHubCom[AWS Security Hub]
+    end
+    class acctGovLogColl acctComStyle
+
+  end
+  class orgCom orgComStyle
+
+  subgraph orgGov [AWS GovCloud Org]
+    subgraph acctGovProd1 [Primary Platform West Account]
+      subgraph regionGovUs1[US Gov West Region]
+
+        subgraph vpcProd1 [VPC Prod]
+
+          subgraph subnetPubProd1 [Public Subnet]
+            albAppProd1[ALBs for App Access]
+            albSshProd1[ALBs for Dev Access]
+            sshProxyProd1[App Dev SSH Proxy]
+          end
+          class subnetPubProd1 subnetStyle
+
+          subgraph subnetCfappProd1 [CloudFroudry App Subnet]
+            gorouterProd1[CloudFoundry Gorouters]
+            uaaProd1[Production UAA]
+            subgraph diegoProd1[Container Management]
+              diegoCellProd1(Web App UI)
+              appContainerProd1{Customer App<br>Containers}
+            end
+          end
+          class subnetCfappProd1 subnetStyle
+
+        end
+        class vpcProd1 vpcStyle
+
+      end
+      class regionGovUs1 regionStyle
+
+    end
+    class acctGovProd1 acctGovStyle
+
+    subgraph acctGovProd2 [Primary Platform East Account]
+      subgraph regionGovUs2[US Gov East Region]
+
+        subgraph vpcProd2 [VPC Prod]
+
+          subgraph subnetPubProd2 [Public Subnet]
+            albAppProd2[ALBs for App Access]
+            albSshProd2[ALBs for Dev Access]
+            sshProxyProd2[App Dev SSH Proxy]
+          end
+          class subnetPubProd2 subnetStyle
+
+          subgraph subnetCfappProd2 [CloudFroudry App Subnet]
+            gorouterProd2[CloudFoundry Gorouters]
+            uaaProd2[Production UAA]
+            subgraph diegoProd2[Container Management]
+              diegoCellProd2(Web App UI)
+              appContainerProd2{Customer App<br>Containers}
+            end
+          end
+          class subnetCfappProd2 subnetStyle
+
+        end
+        class vpcProd2 vpcStyle
+
+      end
+      class regionGovUs2 regionStyle
+
+    end
+    class acctGovProd2 acctGovStyle
+
+    subgraph acctBackupProd1 [Backup Data Account]
+      subgraph regionGovUs3[US Gov Backup Region]
+        backupRdsProd1[RDS DB Copy]
+        backupS3Prod1[S3 Data copy]
+      end
+      class regionGovUs3 regionStyle
+    end
+    class acctBackupProd1 acctGovStyle
+
+    subgraph acctBackupProd2 [Backup Data Account]
+      subgraph regionGovUs4[US Gov Backup Region]
+        backupRdsProd2[RDS DB Copy]
+        backupS3Prod2[S3 Data copy]
+      end
+      class regionGovUs4 regionStyle
+    end
+    class acctBackupProd2 acctGovStyle
+
+    subgraph acctGovStage1 [Staging Account West]
+      stage1[Near Mirror of Primary Prod West account]
+    end
+    class acctGovStage1 acctGovStyle
+
+    subgraph acctGovDev1 [Development Account West]
+      dev1[Sufficient resources for Platform Development]
+    end
+    class acctGovDev1 acctGovStyle
+
+    subgraph acctGovTool1 [Tooling Account West<br>aka West Hub]
+      subgraph vpcTool1 [Tooling VPC West]
+        subgraph subnetCfopsTool1 [CloudFoundry Ops Subnet West]
+          albPrivTool1[ALB for Privileged Users]
+          uaaTool1["UAAs<br>(auth within CloudFoundry)"]
+          jumpboxTool1[Jumpbox]
+          concourseTool1[Concourse CI/CD]
+          boshTool1[BOSH Director]
+          boshDbTool1[BOSH Director DB in RDS]
+          s3CritDataTool1[Critical Data in S3]
+        end
+        class subnetCfopsTool1 subnetStyle
+      end
+      class vpcTool1 vpcStyle
+    end
+    class acctGovTool1 acctGovStyle
+
+    subgraph acctGovStage2 [Staging Account East]
+      stage2[Near Mirror of Primary Prod East account]
+    end
+    class acctGovStage2 acctGovStyle
+
+    subgraph acctGovDev2 [Development Account East]
+      dev2[Sufficient resources for Platform Development]
+    end
+    class acctGovDev2 acctGovStyle
+
+    subgraph acctGovTool2 [Tooling Account East<br>aka East Hub]
+      subgraph vpcTool2 [Tooling VPC East]
+        subgraph subnetCfopsTool2 [CloudFoundry Ops Subnet East]
+          albPrivTool2[ALB for Privileged Users]
+          uaaTool2["UAAs<br>(auth within CloudFoundry)"]
+          jumpboxTool2[Jumpbox]
+          concourseTool2[Concourse CI/CD]
+          boshTool2[BOSH Director]
+          boshDbTool2[BOSH Director DB in RDS]
+          s3CritDataTool2[Critical Data in S3]
+        end
+        class subnetCfopsTool2 subnetStyle
+      end
+      class vpcTool2 vpcStyle
+    end
+    class acctGovTool2 acctGovStyle
+
+    subgraph acctGovMon [Monitoring and Logging Account]
+      logCollectionGov[OpenSearch Log Collection]
+      vulndetectGov[Vulnerability Detection Tools]
+      logvizGov[Log Visualization and Query]
+      contTwrGov[AWS Control Tower]
+      secHubGov[AWS Security Hub]
+    end
+    class acctGovMon acctGovStyle
+
+  end
+  class orgGov orgGovStyle
+
+end
+
+%% Connections
+wafShield <-.Multiple ACLs.-> cloudfront
+appconsumer -- Web HTTPS 443 --> cloudfront
+appdeveloper -- HTTPS 443 or SSH 2222 --> advfirewall
+operators -- HTTPS 443 or SSH 2222 --> zscaler --> advfirewall
+advfirewall -- HTTPS 443 or SSH 2222 --> transit
+operators -.auth.-> identitycenterCom
+identitycenterCom -.auth.-> gsaokta
+
+%% Tool1
+transit -- HTTPS 443 or SSH 2222 --> albPrivTool1
+albPrivTool1 -- Ops CLI --> jumpboxTool1
+jumpboxTool1 -.auth.-> uaaTool1
+albPrivTool1 -- Ops Web HTTPS 443 --> concourseTool1
+concourseTool1 -.auth.-> uaaTool1
+uaaTool1 -.auth.-> gsaokta
+boshTool1 --> boshDbTool1
+boshTool1 .-> acctGovDev1 & acctGovStage1 & acctGovProd1
+boshDbTool1 -.RDS Replication.-> backupRdsProd1
+s3CritDataTool1 -.S3 Cross Region Replication.-> backupS3Prod1
+
+%% Prod1
+cloudfront -- Web HTTPS 443 --> albAppProd1
+albAppProd1 -- Web HTTPS 443 --> gorouterProd1
+gorouterProd1 -- Web HTTPS 443 --> diegoCellProd1
+gorouterProd1 -- CLI SSH 22 --> appContainerProd1
+transit -- Dev CLI SSH --> albSshProd1
+albSshProd1 -- Dev CLI SSH --> sshProxyProd1
+sshProxyProd1-.auth.-> uaaProd1
+uaaProd1 -.auth.- extauth & gsaokta
+sshProxyProd1 -- CLI SSH --> gorouterProd1
+
+%% Tool2
+%%acctGovTool1 ~~~ acctGovTool2
+transit -- HTTPS 443 or SSH 2222 --> albPrivTool2
+albPrivTool2 -- Ops CLI --> jumpboxTool2
+jumpboxTool2 -.auth.-> uaaTool2
+albPrivTool2 -- Ops Web HTTPS 443 --> concourseTool2
+concourseTool2 -.auth.-> uaaTool2
+uaaTool2 -.auth.-> gsaokta
+boshTool2 --> boshDbTool2
+boshTool2 .-> acctGovDev2 & acctGovStage2 & acctGovProd2
+boshDbTool2 -.RDS Replication.-> backupRdsProd2
+s3CritDataTool2 -.S3 Cross Region Replication.-> backupS3Prod2
+
+%% Prod2
+cloudfront -- Web HTTPS 443 --> albAppProd2
+albAppProd2 -- Web HTTPS 443 --> gorouterProd2
+gorouterProd2 -- Web HTTPS 443 --> diegoCellProd2
+gorouterProd2 -- CLI SSH 22 --> appContainerProd2
+transit -- Dev CLI SSH --> albSshProd2
+albSshProd2 -- Dev CLI SSH --> sshProxyProd2
+sshProxyProd2-.auth.-> uaaProd2
+uaaProd2 -.auth.- extauth & gsaokta
+sshProxyProd2 -- CLI SSH --> gorouterProd2
+
+%% Logging
+logCollectionCom -.Log Transfer.->kinesisFirehoseCom
+kinesisFirehoseCom -.Encrypted Log Transfer.-> logCollectionGov
+
+%% Legend
+subgraph Legend
+  direction TB
+  legend_CommOrg[AWS Commercial Organization]:::orgComStyle
+  legend_GovOrg[AWS GovCloud Organization]:::orgGovStyle
+  legend_CommAcct[AWS Commercial Account]:::acctComStyle
+  legend_GovAcct[AWS GovCloud Account]:::acctGovStyle
+  legend_region[AWS Region]:::regionStyle
+  legend_vpc[AWS VPC]:::vpcStyle
+  legend_subnet[AWS Subnet]:::subnetStyle
+end
+
+%% Goals
+subgraph Architecture Draft 2 Diagram Goals
+  textbox[Facilitate discussion<br>SCCA/CNAP inclusion<br>Multi-account<br>Multiple production platforms<br>Separation of Prod and Non-Prod<br>Centralized Logging<br>Offsite data backups]
+end
+  
+
+
+
+%% Connections
+wafShield <-.Multiple ACLs.-> cloudfront
+appconsumer -- Web HTTPS 443 --> cloudfront
+appdeveloper -- HTTPS 443 or SSH 2222 --> advfirewall
+operators -- HTTPS 443 or SSH 2222 --> zscaler --> advfirewall
+advfirewall -- HTTPS 443 or SSH 2222 --> transit
+operators -.auth.-> identitycenterCom
+identitycenterCom -.auth.-> gsaokta
+
+%% Tool1
+transit -- HTTPS 443 or SSH 2222 --> albPrivTool1
+albPrivTool1 -- Ops CLI --> jumpboxTool1
+jumpboxTool1 -.auth.-> uaaTool1
+albPrivTool1 -- Ops Web HTTPS 443 --> concourseTool1
+concourseTool1 -.auth.-> uaaTool1
+uaaTool1 -.auth.-> gsaokta
+boshTool1 --> boshDbTool1
+boshTool1 .-> acctGovDev1 & acctGovStage1 & acctGovProd1
+boshDbTool1 -.RDS Replication.-> backupRdsProd1
+s3CritDataTool1 -.S3 Cross Region Replication.-> backupS3Prod1
+
+%% Prod1
+cloudfront -- Web HTTPS 443 --> albAppProd1
+albAppProd1 -- Web HTTPS 443 --> gorouterProd1
+gorouterProd1 -- Web HTTPS 443 --> diegoCellProd1
+gorouterProd1 -- CLI SSH 22 --> appContainerProd1
+transit -- Dev CLI SSH --> albSshProd1
+albSshProd1 -- Dev CLI SSH --> sshProxyProd1
+sshProxyProd1-.auth.-> uaaProd1
+uaaProd1 -.auth.- extauth & gsaokta
+sshProxyProd1 -- CLI SSH --> gorouterProd1
+
+%% Tool2
+%%acctGovTool1 ~~~ acctGovTool2
+transit -- HTTPS 443 or SSH 2222 --> albPrivTool2
+albPrivTool2 -- Ops CLI --> jumpboxTool2
+jumpboxTool2 -.auth.-> uaaTool2
+albPrivTool2 -- Ops Web HTTPS 443 --> concourseTool2
+concourseTool2 -.auth.-> uaaTool2
+uaaTool2 -.auth.-> gsaokta
+boshTool2 --> boshDbTool2
+boshTool2 .-> acctGovDev2 & acctGovStage2 & acctGovProd2
+boshDbTool2 -.RDS Replication.-> backupRdsProd2
+s3CritDataTool2 -.S3 Cross Region Replication.-> backupS3Prod2
+
+%% Prod2
+cloudfront -- Web HTTPS 443 --> albAppProd2
+albAppProd2 -- Web HTTPS 443 --> gorouterProd2
+gorouterProd2 -- Web HTTPS 443 --> diegoCellProd2
+gorouterProd2 -- CLI SSH 22 --> appContainerProd2
+transit -- Dev CLI SSH --> albSshProd2
+albSshProd2 -- Dev CLI SSH --> sshProxyProd2
+sshProxyProd2-.auth.-> uaaProd2
+uaaProd2 -.auth.- extauth & gsaokta
+sshProxyProd2 -- CLI SSH --> gorouterProd2
+
+%% Logging
+logCollectionCom -.Log Transfer.->kinesisFirehoseCom
+kinesisFirehoseCom -.Encrypted Log Transfer.-> logCollectionGov
