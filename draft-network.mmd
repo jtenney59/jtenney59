@@ -19,10 +19,12 @@ subgraph Cloud.gov_Boundry
       subgraph Production 1 VPC
       end
       subgraph Non Production 1 VPC
+       Subgraph Availability Zone A
         subgraph Cloud Foundry
          Development[Development]
          Staging[Staging]
          cloud_foundry_private_subnet[CF Private Subnet]
+        end
         end
        end
        subgraph Production 2 VPC
