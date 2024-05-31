@@ -1,0 +1,140 @@
+Here is the mermaid code to generate the described AWS network diagram:
+
+```mermaid
+flowchart TD
+    %% Full Organization Boundary
+    subgraph full_org[Full Organization Boundary]
+        style full_org stroke:black,stroke-width:2px
+
+        %% Commercial Org Boundary
+        subgraph commercial_org[Commercial Org Boundary]
+            style commercial_org stroke:blue,stroke-width:2px
+            
+            %% Commercial Accounts
+            subgraph customer_access[Customer Access Account]
+                style customer_access stroke:orange,stroke-width:2px
+                ALB[ALB]
+                CDN[CloudFront CDN]
+                NFW[AWS Network Firewall]
+                WAF[AWS WAF]
+                DNS[Route 53 DNS]
+            end
+
+            subgraph monitoring_logging[Monitoring and Logging Account]
+                style monitoring_logging stroke:orange,stroke-width:2px
+            end
+            
+            subgraph cnap[CNAP Account]
+                style cnap stroke:orange,stroke-width:2px
+            end
+        end
+        
+        %% GovCloud Org Boundary
+        subgraph govcloud_org[GovCloud Org Boundary]
+            style govcloud_org stroke:red,stroke-width:2px
+            
+            %% US Gov West Region
+            subgraph us_gov_west[US Gov West Region]
+                style us_gov_west stroke:magenta,stroke-width:2px
+                
+                %% Primary Account
+                subgraph primary_account[Primary Account]
+                    style primary_account stroke:blue,stroke-width:2px
+                    
+                    %% Prod VPC
+                    subgraph prod_vpc[Prod VPC]
+                        style prod_vpc stroke:black,stroke-width:2px
+                        
+                        %% Availability Zone A
+                        subgraph az_a_prod[Availability Zone A]
+                            style az_a_prod stroke:purple,stroke-width:2px
+                            public_subnet_a_prod[Public Subnet]
+                            private_subnet_a_prod[Private Subnet]
+                            style public_subnet_a_prod stroke:grey,stroke-width:2px
+                            style private_subnet_a_prod stroke:grey,stroke-width:2px
+                        end
+                        
+                        %% Availability Zone B
+                        subgraph az_b_prod[Availability Zone B]
+                            style az_b_prod stroke:purple,stroke-width:2px
+                            public_subnet_b_prod[Public Subnet]
+                            private_subnet_b_prod[Private Subnet]
+                            style public_subnet_b_prod stroke:grey,stroke-width:2px
+                            style private_subnet_b_prod stroke:grey,stroke-width:2px
+                        end
+                    end
+                    
+                    %% Staging VPC
+                    subgraph staging_vpc[Staging VPC]
+                        style staging_vpc stroke:black,stroke-width:2px
+                        
+                        %% Availability Zone A
+                        subgraph az_a_staging[Availability Zone A]
+                            style az_a_staging stroke:purple,stroke-width:2px
+                            public_subnet_a_staging[Public Subnet]
+                            private_subnet_a_staging[Private Subnet]
+                            style public_subnet_a_staging stroke:grey,stroke-width:2px
+                            style private_subnet_a_staging stroke:grey,stroke-width:2px
+                        end
+                        
+                        %% Availability Zone B
+                        subgraph az_b_staging[Availability Zone B]
+                            style az_b_staging stroke:purple,stroke-width:2px
+                            public_subnet_b_staging[Public Subnet]
+                            private_subnet_b_staging[Private Subnet]
+                            style public_subnet_b_staging stroke:grey,stroke-width:2px
+                            style private_subnet_b_staging stroke:grey,stroke-width:2px
+                        end
+                    end
+                    
+                    %% Development VPC
+                    subgraph dev_vpc[Development VPC]
+                        style dev_vpc stroke:black,stroke-width:2px
+                        
+                        %% Availability Zone A
+                        subgraph az_a_dev[Availability Zone A]
+                            style az_a_dev stroke:purple,stroke-width:2px
+                            public_subnet_a_dev[Public Subnet]
+                            private_subnet_a_dev[Private Subnet]
+                            style public_subnet_a_dev stroke:grey,stroke-width:2px
+                            style private_subnet_a_dev stroke:grey,stroke-width:2px
+                        end
+                        
+                        %% Availability Zone B
+                        subgraph az_b_dev[Availability Zone B]
+                            style az_b_dev stroke:purple,stroke-width:2px
+                            public_subnet_b_dev[Public Subnet]
+                            private_subnet_b_dev[Private Subnet]
+                            style public_subnet_b_dev stroke:grey,stroke-width:2px
+                            style private_subnet_b_dev stroke:grey,stroke-width:2px
+                        end
+                    end
+                    
+                    %% Tooling VPC
+                    subgraph tooling_vpc[Tooling VPC]
+                        style tooling_vpc stroke:black,stroke-width:2px
+                        ALB_tooling[ALB for Privileged Users]
+                        BOSH[BOSH Director]
+                        UAA[UAA]
+                    end
+                    
+                    %% Disaster Recovery VPC
+                    subgraph dr_vpc[Disaster Recovery VPC]
+                        style dr_vpc stroke:black,stroke-width:2px
+                        RDS_copy[RDS Copy]
+                        S3_copy[S3 Copy]
+                    end
+                end
+                
+                %% Monitoring and Logging Account
+                subgraph monitoring_logging_gov[Monitoring and Logging Account]
+                    style monitoring_logging_gov stroke:blue,stroke-width:2px
+                    Control_Tower[AWS Control Tower]
+                    Security_Hub[Security Hub]
+                end
+            end
+        end
+    end
+```
+
+You can copy this mermaid code and use it in a Markdown viewer that supports mermaid diagrams to visualize the AWS network architecture.
